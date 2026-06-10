@@ -139,9 +139,12 @@ if supports_structured_output and not isinstance(llm, ChatGroq) and "deepseek" n
 
 **docker-compose.yml 已修改的默认值**：
 ```yaml
+# backend environment
 - EMBEDDING_MODEL=${EMBEDDING_MODEL-all-MiniLM-L6-v2}
 - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER-sentence-transformer}
 - MAX_TOKEN_CHUNK_SIZE=${MAX_TOKEN_CHUNK_SIZE-200}
+# frontend build args
+- VITE_LLM_MODELS=${VITE_LLM_MODELS-openai_gpt_4o_mini}
 ```
 
 ---
@@ -155,3 +158,5 @@ if supports_structured_output and not isinstance(llm, ChatGroq) and "deepseek" n
 5. **ChatBot 组件是独立目录**：`src/components/ChatBot/` 是对话功能核心，阶段五的改造重点。
 6. **抽取参数坑多**：`/extract` API 的多个参数默认 None，前端调用时已内置默认值，但 API 直接调用必须显式传入。
 7. **抽取流程会删除源文件**：成功或失败后 `merged_files/` 中的文件会被删除，重试需重新 upload。
+8. **前端模型列表是 build-time 注入**：`VITE_LLM_MODELS` 通过 docker-compose build args 在构建时写入 JS bundle，修改后需 `docker compose up --build -d frontend` 重建。
+9. **重复 Chunk 问题**：extract 失败重试时若不传 `retry_condition`，会创建重复 Chunk 节点。解法：传 `retry_condition=delete_entities_and_start_from_beginning`。

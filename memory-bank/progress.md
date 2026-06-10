@@ -139,12 +139,37 @@
 
 ---
 
-## 阶段一完成总结
+### Step 2.4 — 前端模型选择修复 ✅
+**状态**：已完成
+**完成时间**：2026-06-11
+**问题**：前端聊天框模型下拉列表不含 `openai_gpt_4o_mini`，显示的是默认的 `VITE_LLM_MODELS_PROD` 列表（diffbot、gemini等）
+**原因**：`docker-compose.yml` 中 `VITE_LLM_MODELS` 的 build args 默认值为空，前端构建时未注入正确模型列表
+**修复**：`docker-compose.yml` 第 58 行改为 `VITE_LLM_MODELS=${VITE_LLM_MODELS-openai_gpt_4o_mini}`
+**操作**：`docker compose up --build -d frontend` 重建前端容器
+**验证**：JS bundle 中包含 `openai_gpt_4o_mini`，前端模型选择正常
 
-**对 Fork 代码的改动**（共 3 个文件，均为部署/配置适配，不影响业务逻辑）：
+---
+
+### 待解决问题（讨论中，未执行）
+
+1. **图谱重复节点**：飞桨常用词汇.pdf 多次 upload 失败重试留下重复 Chunk 节点
+   - 方案：清空 Neo4j → 重新抽取（一次性解决）
+   - 根因：extract 失败时未传 `retry_condition=delete_entities_and_start_from_beginning`
+2. **图谱结构太扁平**：Chunk/Document 结构节点与 Entity 节点混在一起显示
+   - 方案：阶段三前端改造时过滤，只展示 Entity 节点
+3. **关系标签英文**：DeepSeek 默认用英文抽取关系类型
+   - 方案：重抽时在 `additional_instructions` 中指定用中文命名
+
+---
+
+## 阶段一+二 代码改动总结
+
+**对 Fork 代码的改动**（共 4 处，`docker-compose.yml` 中）：
 1. `backend/Dockerfile`：workers 8→2, threads 8→4（防 8GB 内存 OOM）
 2. `backend/constraints.txt`：去掉 `+cpu` 后缀（Apple Silicon 兼容）
 3. `docker-compose.yml`：EMBEDDING_MODEL/EMBEDDING_PROVIDER/MAX_TOKEN_CHUNK_SIZE 默认值
+4. `docker-compose.yml`：VITE_LLM_MODELS 默认值设为 `openai_gpt_4o_mini`
 
 **配置文件**（不在 git 中，通过 .env 管理）：
 - `backend/.env`：Neo4j 连接 + DeepSeek API + 嵌入模型配置
+- `frontend/.env`：后端 API 地址 + 模型选择 + 跳过认证
