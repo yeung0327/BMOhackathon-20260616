@@ -14,7 +14,7 @@
 |------|------|------|----------|
 | **后端框架** | FastAPI（llm-graph-builder 内置） | Python 3.12+ | 官方项目自带，无需选择，开箱即用 |
 | **数据库** | Neo4j AuraDB Free | 5.x | 免费云托管，免运维，Bolt 协议稳定 |
-| **LLM 推理** | OpenAI API | GPT-4o-mini | 云端调用，无本地资源消耗，后端原生支持 |
+| **LLM 推理** | DeepSeek API（兼容 OpenAI 格式） | deepseek-chat | 云端调用，无本地资源消耗，通过 OPENAI_API_BASE 环境变量接入 |
 | **前端框架** | React + TypeScript | React 18 | 官方前端已选定，生态成熟 |
 | **构建工具** | Vite | 5.x | 官方前端已选定，热更新快 |
 | **图谱可视化** | @neo4j-nvl/react（Neo4j 官方组件） | latest | 项目内置，支持节点样式定制和事件回调 |
@@ -37,12 +37,12 @@
 
 **结论**：8GB RAM MacBook 无法同时运行 Docker 后端(2.4GB) + Ollama(5GB)。OpenAI API 零改动接入。
 
-### 为什么选 GPT-4o-mini？
+### 为什么选 DeepSeek？
 
-- 后端 `llm.py` 的 OPENAI 分支已完整支持，格式：`model_name,api_key`
-- 只需修改 `.env`，零代码改动
-- 抽取质量 > llama3:8b，响应速度快
-- 费用极低，黑客松规模可忽略不计
+- 后端 `llm.py` 的 OPENAI 分支原生支持 `ChatOpenAI`，而 `ChatOpenAI` 读取 `OPENAI_API_BASE` 环境变量
+- 设置 `OPENAI_API_BASE=https://api.deepseek.com/v1` 即可零代码改动接入 DeepSeek
+- 费用极低（¥1/百万 token），新账号有免费额度
+- 抽取质量优于本地小模型
 
 ### 为什么不用 Next.js？
 

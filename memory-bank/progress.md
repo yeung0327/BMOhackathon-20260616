@@ -37,13 +37,14 @@
 **状态**：已完成
 **完成时间**：2026-06-09（初始）→ 2026-06-10（更新 LLM 配置）
 **操作**：
-1. 创建 `backend/.env` — Neo4j AuraDB 连接信息 + OpenAI API 配置 + sentence-transformer 嵌入
+1. 创建 `backend/.env` — Neo4j AuraDB 连接信息 + DeepSeek API 配置 + sentence-transformer 嵌入
 2. 创建 `frontend/.env` — 后端 API 地址 + 启用 openai_gpt_4o_mini 模型 + 跳过认证
 **关键配置说明**：
-- LLM 使用 OpenAI API：`LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=gpt-4o-mini,<api-key>`
+- Neo4j URI：`bolt+s://ca425266.databases.neo4j.io`（注意是 bolt+s 协议）
+- LLM 使用 DeepSeek API：`LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=deepseek-chat,<api-key>`
+- DeepSeek 通过 `OPENAI_API_BASE=https://api.deepseek.com/v1` 环境变量接入
 - 嵌入模型使用本地 `all-MiniLM-L6-v2`（容器内已下载）
 - Neo4j AuraDB 实例名: roots-and-shoots, ID: ca425266
-- 不再需要 `host.docker.internal:11434`（Ollama 已移除）
 
 ---
 
@@ -65,14 +66,24 @@
 
 ---
 
-### Step 1.6 — 验证端到端连通性
-**状态**：⏳ 进行中
-**已验证**：
-- ✅ Neo4j AuraDB 从容器内连通（`RETURN 1` 成功）
-- ✅ `/connect` API 返回 200 Success（修复嵌入模型下载后）
+### Step 1.6 — 验证端到端连通性 ✅
+**状态**：已完成
+**完成时间**：2026-06-10
+**验证结果**：
+- ✅ `/connect` API 返回 Success（Neo4j + 嵌入模型）
+- ✅ `/chat_bot` API 返回 Success（DeepSeek LLM 调用成功，模型 deepseek-chat）
 - ✅ 嵌入模型 all-MiniLM-L6-v2 容器内可用（384维）
-- ⏳ 待验证：OpenAI API 连通性（需配置 API Key 后测试）
-**待完成**：
-1. 在 `backend/.env` 中填入 OpenAI API Key
-2. 重启后端容器
-3. 调用 `/chat_bot` 或 `/extract` 端点验证 LLM 调用成功
+**关键修复**：
+- Neo4j URI 协议从 `neo4j+s://` 改为 `bolt+s://`（AuraDB Professional 实例需用 bolt 协议）
+- LLM 使用 DeepSeek API（通过 OPENAI_API_BASE 环境变量指向 https://api.deepseek.com/v1）
+
+---
+
+## 阶段一完成总结
+
+**对 Fork 代码的改动**（仅 2 个文件，均为部署适配，不影响业务逻辑）：
+1. `backend/Dockerfile`：workers 8→2, threads 8→4（防 8GB 内存 OOM）
+2. `backend/constraints.txt`：去掉 `+cpu` 后缀（Apple Silicon 兼容）
+
+**配置文件**（不在 git 中，通过 .env 管理）：
+- `backend/.env`：Neo4j 连接 + DeepSeek API + 嵌入模型配置

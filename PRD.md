@@ -35,7 +35,7 @@
 | **前端** | Next.js + TypeScript + Three.js | 3D 图谱可视化、LLM 对话界面 |
 | **后端** | llm-graph-builder（开源，Fork 到我的仓库） | 文档上传、LLM 抽取实体关系、GraphRAG 问答 |
 | **数据层** | Neo4j AuraDB（免费云实例） | 存储节点（事件）和关系（因果/时序） |
-| **LLM 策略** | OpenAI GPT-4o-mini API（云端调用，零本地资源） | 实体抽取 + 智能问答 |
+| **LLM 策略** | DeepSeek API（deepseek-chat，OpenAI 兼容格式，零本地资源） | 实体抽取 + 智能问答 |
 
 **关键说明**：
 - 后端代码全开源，直接 Fork 到 yeung0327/llm-graph-builder
@@ -45,8 +45,8 @@
 - LLM 使用 OpenAI API，无需本地模型部署
 
 **LLM 部署策略**：
-- 使用 OpenAI GPT-4o-mini API（云端调用）
-- 后端 `llm.py` 原生支持 OpenAI，只需在 `.env` 配置 `model_name,api_key`
+- 使用 DeepSeek API（deepseek-chat 模型，OpenAI 兼容格式）
+- 通过 `OPENAI_API_BASE=https://api.deepseek.com/v1` 环境变量接入，零代码改动
 - 无需本地 GPU/大内存，8GB 机器即可运行完整项目
 
 ---
@@ -88,7 +88,7 @@
 | 组件 | 说明 |
 |------|------|
 | Neo4j AuraDB | 注册免费实例，保存 URI/用户名/密码 |
-| LLM 选择 | OpenAI GPT-4o-mini API |
+| LLM 选择 | DeepSeek API（deepseek-chat） |
 | 环境变量 | 正确配置前后端 .env 文件 |
 | 启动方式 | Docker 一键启动 |
 

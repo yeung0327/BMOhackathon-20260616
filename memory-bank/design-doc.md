@@ -32,7 +32,7 @@
 | 前端 | React + TypeScript + Vite | Fork 官方前端，深度定制 UI |
 | 后端 | Python + FastAPI | 直接使用官方后端，基本不改 |
 | 数据库 | Neo4j AuraDB（免费实例） | 存储知识图谱 |
-| LLM | OpenAI GPT-4o-mini（API 调用） | 实体抽取 + 智能问答 |
+| LLM | DeepSeek API（deepseek-chat，OpenAI 兼容格式） | 实体抽取 + 智能问答 |
 | 图谱可视化 | Neo4j 官方图谱组件（内置于前端） | 节点关系渲染 |
 | 部署 | Docker Compose 本地运行 | localhost 演示 |
 

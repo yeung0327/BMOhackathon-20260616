@@ -33,8 +33,8 @@
 |------|------|
 | 前端 | React + TypeScript + Vite（Fork 官方前端） |
 | 后端 | Python + FastAPI（llm-graph-builder） |
-| 数据库 | Neo4j AuraDB Free（实例 ID: ca425266） |
-| LLM | **OpenAI GPT-4o-mini**（API 调用） |
+| 数据库 | Neo4j AuraDB Professional（实例 ID: ca425266, bolt+s 协议） |
+| LLM | **DeepSeek API**（deepseek-chat，通过 OpenAI 兼容层接入） |
 | 嵌入 | all-MiniLM-L6-v2（容器内本地） |
 | 容器化 | Docker Compose |
 
@@ -44,11 +44,14 @@
 
 ### 后端 `.env`（backend/.env）
 ```
-NEO4J_URI=neo4j+s://ca425266.databases.neo4j.io
+NEO4J_URI=bolt+s://ca425266.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=<see env file>
 NEO4J_DATABASE=neo4j
-LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=gpt-4o-mini,<openai-api-key>
+LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=deepseek-chat,<deepseek-api-key>
+OPENAI_API_BASE=https://api.deepseek.com/v1
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+EMBEDDING_PROVIDER=sentence-transformer
 ```
 
 ### 前端 `.env`（frontend/.env）
@@ -66,9 +69,8 @@ VITE_SKIP_AUTH=true
 
 ## 当前进度
 
-**卡在**：Step 1.6（验证端到端连通性）
-**已完成**：Step 1.1 ~ 1.5
-**下一步**：填入 OpenAI API Key → 重启后端 → 验证 LLM 调用
+**已完成**：阶段一全部（Step 1.1 ~ 1.6）✅
+**下一步**：阶段二 Step 2.1（准备测试文档）
 
 详细进度见：`memory-bank/progress.md`
 
@@ -77,9 +79,10 @@ VITE_SKIP_AUTH=true
 ## 重要决策记录
 
 1. **放弃 Ollama 本地部署**（2026-06-10）：8GB RAM 不足以同时跑 Docker 后端 + LLM 模型
-2. **选用 OpenAI GPT-4o-mini**：后端原生支持，零代码改动，只改 .env
-3. **使用官方前端 Fork 定制**（非 Next.js 重写）：工期有限，Fork 改 CSS + 逻辑最高效
-4. **图谱用 Neo4j 官方组件**（非 Three.js）：已内置，4 天工期唯一合理选择
+2. **选用 DeepSeek API**（通过 OpenAI 兼容层）：设置 `OPENAI_API_BASE` 环境变量即可，零代码改动
+3. **Neo4j URI 用 `bolt+s://`**：AuraDB Professional 实例的路由协议问题，`neo4j+s://` 无法获取路由信息
+4. **使用官方前端 Fork 定制**（非 Next.js 重写）：工期有限，Fork 改 CSS + 逻辑最高效
+5. **图谱用 Neo4j 官方组件**（非 Three.js）：已内置，4 天工期唯一合理选择
 
 ---
 

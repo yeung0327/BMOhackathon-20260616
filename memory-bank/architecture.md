@@ -44,14 +44,15 @@ llm-graph-builder/
 | `requirements.txt` | Python 依赖 |
 | `example.env` | 环境变量模板 |
 
-### LLM 配置方式（OpenAI）
+### LLM 配置方式（DeepSeek via OpenAI 兼容层）
 
 `backend/.env` 中设置：
 ```
-LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=gpt-4o-mini,<your-api-key>
+LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=deepseek-chat,<your-deepseek-api-key>
+OPENAI_API_BASE=https://api.deepseek.com/v1
 ```
 
-格式为 `model_name,api_key`，后端 `llm.py` 的 OPENAI 分支直接解析使用，零代码改动。
+原理：`ChatOpenAI` 类自动读取 `OPENAI_API_BASE` 环境变量作为请求地址。DeepSeek API 与 OpenAI 格式完全兼容，零代码改动。
 
 ---
 
@@ -93,7 +94,8 @@ LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=gpt-4o-mini,<your-api-key>
 **关键配置**：
 - `VITE_SKIP_AUTH=true` — 跳过认证，方便本地开发演示
 - 前端通过 `VITE_BACKEND_API_URL` 连接后端
-- LLM 通过 OpenAI API 远程调用，无需本地模型服务
+- LLM 通过 DeepSeek API 远程调用（OpenAI 兼容格式），无需本地模型服务
+- Neo4j 连接使用 `bolt+s://` 协议（AuraDB Professional 实例）
 
 ---
 
@@ -101,6 +103,6 @@ LLM_MODEL_CONFIG_OPENAI_GPT_4O_MINI=gpt-4o-mini,<your-api-key>
 
 1. **前端使用 Tailwind CSS**：`tailwind.config.js` 和 `postcss.config.js` 存在，说明项目使用 Tailwind 而非纯 CSS Variables。样式改造策略需调整——可能需要修改 Tailwind 配置来实现深色主题。
 2. **前端端口是 8080**（非 5173）：Docker 模式下前端通过 nginx 在 8080 端口提供服务；本地开发模式（yarn dev）才是 5173。
-3. **多 LLM 支持**：后端支持 OpenAI、Gemini、Anthropic、Diffbot、Fireworks 等多模型，当前使用 OpenAI GPT-4o-mini。
+3. **多 LLM 支持**：后端支持 OpenAI、Gemini、Anthropic、Diffbot、Fireworks 等多模型，当前通过 OPENAI_API_BASE 指向 DeepSeek。
 4. **Graph 组件是独立目录**：`src/components/Graph/` 是图谱可视化核心，阶段三四的改造重点。
 5. **ChatBot 组件是独立目录**：`src/components/ChatBot/` 是对话功能核心，阶段五的改造重点。
