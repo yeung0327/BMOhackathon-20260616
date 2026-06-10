@@ -14,8 +14,7 @@
 |------|------|------|----------|
 | **后端框架** | FastAPI（llm-graph-builder 内置） | Python 3.12+ | 官方项目自带，无需选择，开箱即用 |
 | **数据库** | Neo4j AuraDB Free | 5.x | 免费云托管，免运维，Bolt 协议稳定 |
-| **LLM 推理** | Ollama | latest | 本地免费，零审核，一条命令启动 |
-| **LLM 模型** | `llama3:8b` | 8B 参数 | 抽取质量与速度的最佳平衡点 |
+| **LLM 推理** | OpenAI API | GPT-4o-mini | 云端调用，无本地资源消耗，后端原生支持 |
 | **前端框架** | React + TypeScript | React 18 | 官方前端已选定，生态成熟 |
 | **构建工具** | Vite | 5.x | 官方前端已选定，热更新快 |
 | **图谱可视化** | @neo4j-nvl/react（Neo4j 官方组件） | latest | 项目内置，支持节点样式定制和事件回调 |
@@ -27,19 +26,27 @@
 
 ## 关键决策说明
 
+### 为什么不用 Ollama 本地模型？
+
+| 因素 | Ollama 本地 | OpenAI API |
+|------|------------|------------|
+| 内存要求 | llama3:8b 需 ~5GB，8GB 机器跑不动 | 零本地资源 |
+| 部署复杂度 | Docker 后端 + Ollama 抢内存，OOM | 只需 API Key |
+| 推理质量 | 8B 模型抽取质量一般 | GPT-4o-mini 质量优秀 |
+| 费用 | 免费 | ~$0.15/百万token，黑客松期间几乎免费 |
+
+**结论**：8GB RAM MacBook 无法同时运行 Docker 后端(2.4GB) + Ollama(5GB)。OpenAI API 零改动接入。
+
+### 为什么选 GPT-4o-mini？
+
+- 后端 `llm.py` 的 OPENAI 分支已完整支持，格式：`model_name,api_key`
+- 只需修改 `.env`，零代码改动
+- 抽取质量 > llama3:8b，响应速度快
+- 费用极低，黑客松规模可忽略不计
+
 ### 为什么不用 Next.js？
 
 原始 PRD 提到 Next.js，但官方前端是 React + Vite。Fork 定制远比重写成本低。Next.js 的 SSR 能力在本地演示场景无意义。
-
-### 为什么选 `llama3:8b` 而非更大模型？
-
-| 模型 | 参数 | 抽取质量 | 速度 | 内存占用 |
-|------|------|----------|------|----------|
-| llama3:8b | 8B | 够用 | 快（~5s/文档） | ~5GB |
-| llama3:70b | 70B | 更好 | 慢（~60s/文档） | ~40GB |
-| mistral:7b | 7B | 一般 | 快 | ~4GB |
-
-8B 模型在 MacBook Pro 16GB+ 上流畅运行，演示时响应及时。如抽取质量不足，用手动数据兜底。
 
 ### 为什么用 CSS Variables 而非 Tailwind/styled-components？
 
@@ -71,11 +78,12 @@
 | 项目 | 最低要求 |
 |------|----------|
 | macOS | 13+ |
-| RAM | 16GB（Ollama 8B 模型需要 ~5GB） |
+| RAM | 8GB（不再需要额外内存给本地模型） |
 | Node.js | 18+ |
 | Python | 3.12+ |
 | Docker | Desktop 4.x |
-| 磁盘 | 预留 15GB（Docker 镜像 + 模型文件） |
+| 磁盘 | 预留 10GB（Docker 镜像） |
+| 网络 | 需访问 OpenAI API |
 
 ---
 

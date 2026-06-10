@@ -35,18 +35,19 @@
 | **前端** | Next.js + TypeScript + Three.js | 3D 图谱可视化、LLM 对话界面 |
 | **后端** | llm-graph-builder（开源，Fork 到我的仓库） | 文档上传、LLM 抽取实体关系、GraphRAG 问答 |
 | **数据层** | Neo4j AuraDB（免费云实例） | 存储节点（事件）和关系（因果/时序） |
-| **LLM 策略** | 优先 Ollama（本地免费，快速部署），后续可切换文心一言 API | 实体抽取 + 智能问答 |
+| **LLM 策略** | OpenAI GPT-4o-mini API（云端调用，零本地资源） | 实体抽取 + 智能问答 |
 
 **关键说明**：
 - 后端代码全开源，直接 Fork 到 yeung0327/llm-graph-builder
 - 所有文档（PRD、任务卡）放在总仓库 BMOhackathon-20260616
 - 前端代码也放在总仓库
 - 整个项目本地运行（localhost）
+- LLM 使用 OpenAI API，无需本地模型部署
 
-**LLM 部署策略（最佳实践）**：
-1. 先用 Ollama 本地模型跑通全流程（免费、无需审核、不依赖网络）
-2. 同时申请百度文心一言 API（需 1-3 天审核）
-3. 审核通过后，改环境变量即可无缝切换（前端代码无需修改）
+**LLM 部署策略**：
+- 使用 OpenAI GPT-4o-mini API（云端调用）
+- 后端 `llm.py` 原生支持 OpenAI，只需在 `.env` 配置 `model_name,api_key`
+- 无需本地 GPU/大内存，8GB 机器即可运行完整项目
 
 ---
 
@@ -87,19 +88,19 @@
 | 组件 | 说明 |
 |------|------|
 | Neo4j AuraDB | 注册免费实例，保存 URI/用户名/密码 |
-| LLM 选择 | Ollama（本地免费，首选）+ 后续可切换文心一言 |
+| LLM 选择 | OpenAI GPT-4o-mini API |
 | 环境变量 | 正确配置前后端 .env 文件 |
 | 启动方式 | Docker 一键启动 |
 
 **后端提供的能力**：
 - 文档上传 → LLM 抽取实体关系 → 写入 Neo4j
-- REST API：`/api/graph?keyword=xxx`（获取图谱数据）
-- REST API：`/api/chat`（基于图谱的问答）
+- REST API：`/graph_query`（获取图谱数据）
+- REST API：`/chat_bot`（基于图谱的问答）
+- REST API：`/get_neighbours`（获取邻居节点）
 
 **LLM 切换说明**：
-- Ollama 和文心一言 API 可以共存
+- 后端支持多 LLM 提供商（OpenAI、Gemini、Anthropic 等）
 - 修改 `.env` 文件即可切换，前端代码无需改动
-- 推荐先用 Ollama 快速跑通，审核通过后再接入文心一言
 
 ---
 
@@ -107,14 +108,13 @@
 
 | 阶段 | 天数 | 任务 | 产出 |
 |------|------|------|------|
-| 阶段一：后端部署 | 第 1天 | Neo4j + llm-graph-builder 部署，Ollama 配置，上传测试文档 | 后端 API 可用 |
+| 阶段一：后端部署 | 第 1天 | Neo4j + llm-graph-builder 部署，OpenAI API 配置 | 后端 API 可用 |
 | 阶段二：数据准备 | 第 1-2天 | 上传 5-10 份知识库文档，验证抽取效果 | 真实图谱数据 |
 | 阶段三：前端开发 | 第 2天 | 3D 图谱可视化 + 对话侧边栏 | 完整前端应用 |
 | 阶段四：打磨演示 | 第 3-4天 | 美化、录视频、写 PPT | 最终作品 |
 
-**并行任务**：
-- 第 1 天同步提交百度文心一言 API 申请（审核需 1-3 天）
-- 审核通过后随时切换 API
+**备注**：
+- OpenAI API Key 已配置，无需等待审核
 
 ---
 
