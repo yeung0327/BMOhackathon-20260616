@@ -81,25 +81,51 @@ curl https://api.openai.com/v1/models -H "Authorization: Bearer <your-key>" | he
 
 ### Step 2.1 — 准备测试文档
 
-**指令**：准备 5 份测试文档（至少包含 PDF 和 Markdown 各一份），内容应包含有因果关系的事件（如：活动策划 → 执行 → 效果），便于演示因果链。
+**指令**：准备 6 份测试 PDF 文档，内容涉及 PaddleOCR/飞桨生态，具有因果关系（技术调研→评估→规划→执行）。
 
-**验证**：本地目录中有 5 份文档文件，格式正确可打开。
+**实际文档**：
+1. `PP-OCRv6端侧载体部署可行性调研.pdf`
+2. `Openclaw 接入文心大模型效果初步评估.pdf`
+3. `5.13深圳倍加宝公司交流纪要.pdf`
+4. `【运营规划】PaddleOCR头部项目集成计划.pdf`
+5. `飞桨常用词汇.pdf`
+6. `专项：PaddleOCR头部项目集成计划🌟‼️.pdf`
+
+**验证**：✅ 本地桌面有 6 份 PDF 文件，格式正确可打开。
 
 ---
 
 ### Step 2.2 — 上传文档触发实体抽取
 
-**指令**：通过后端 API 或官方前端界面，逐一上传 5 份测试文档，等待 LLM 完成实体关系抽取（观察 Docker 日志中的处理进度）。
+**指令**：通过 `/upload` API 上传文档，再通过 `/extract` API 触发 LLM 实体关系抽取。
 
-**验证**：Docker 日志中显示每份文档处理完成，无报错。
+**关键参数**（必须显式传入，否则报 NoneType 错误）：
+```bash
+curl -X POST http://localhost:8000/extract \
+  --data-urlencode "uri=bolt+s://ca425266.databases.neo4j.io" \
+  --data-urlencode "userName=neo4j" \
+  --data-urlencode "password=<password>" \
+  --data-urlencode "database=neo4j" \
+  --data-urlencode "model=openai_gpt_4o_mini" \
+  --data-urlencode "source_type=local file" \
+  --data-urlencode "file_name=xxx.pdf" \
+  --data-urlencode "language=chinese" \
+  --data-urlencode "token_chunk_size=200" \
+  --data-urlencode "chunk_overlap=20" \
+  --data-urlencode "chunks_to_combine=1" \
+  --data-urlencode "embedding_provider=sentence-transformer" \
+  --data-urlencode "embedding_model=all-MiniLM-L6-v2"
+```
+
+**验证**：✅ 6 份文档全部 Completed，Docker 日志无报错。
 
 ---
 
 ### Step 2.3 — 在 Neo4j 中验证抽取结果
 
-**指令**：在 Neo4j Browser 中执行 `MATCH (n) RETURN count(n)` 查看节点数，执行 `MATCH ()-[r]->() RETURN count(r)` 查看关系数。
+**指令**：通过 `/sources_list` API 或 Neo4j Browser 验证节点和关系数量。
 
-**验证**：节点数 ≥ 20，关系数 ≥ 30。如不满足，记录问题进入 Step 2.4。
+**验证**：✅ 节点数 137（≥ 20），关系数 295（≥ 30）。无需进入 Step 2.4。
 
 ---
 

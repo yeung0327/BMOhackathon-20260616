@@ -79,11 +79,72 @@
 
 ---
 
+## 阶段二：数据灌入与验证
+
+### Step 2.1 — 准备测试文档 ✅
+**状态**：已完成
+**完成时间**：2026-06-10
+**文档清单**（6份，均为 PDF，位于 `/Users/yangqianqian/Desktop/`）：
+1. `PP-OCRv6端侧载体部署可行性调研.pdf` — 技术调研类
+2. `Openclaw 接入文心大模型效果初步评估.pdf` — 技术评估类
+3. `5.13深圳倍加宝公司交流纪要.pdf` — 会议纪要类
+4. `【运营规划】PaddleOCR头部项目集成计划.pdf` — 运营规划类
+5. `飞桨常用词汇.pdf` — 术语参考类
+6. `专项：PaddleOCR头部项目集成计划🌟‼️.pdf` — 项目计划类
+
+**备注**：
+- 6份文档涵盖技术调研、效果评估、客户交流、运营规划、术语词汇、项目计划等多种类型
+- 文档内容涉及 PaddleOCR、飞桨生态，具有实际因果关系（技术调研→评估→规划→执行）
+- 超出原计划5份，增加至6份，内容更丰富
+
+---
+
+### Step 2.2 — 上传文档触发实体抽取 ✅
+**状态**：已完成
+**完成时间**：2026-06-10
+**操作**：
+1. 通过 `/upload` API 上传 6 份 PDF 文档到后端
+2. 通过 `/extract` API 逐一触发实体关系抽取（使用 DeepSeek LLM）
+**抽取结果**：
+
+| 文档 | 节点数 | 关系数 | 处理时间 |
+|------|--------|--------|----------|
+| 飞桨常用词汇.pdf | 32 | 62 | 9.2s |
+| PP-OCRv6端侧载体部署可行性调研.pdf | 8 | 14 | ~10s |
+| 5.13深圳倍加宝公司交流纪要.pdf | 3 | 4 | ~8s |
+| Openclaw接入文心大模型效果初步评估.pdf | 3 | 4 | ~8s |
+| 【运营规划】PaddleOCR头部项目集成计划.pdf | 88 | 207 | 38.7s |
+| 专项：PaddleOCR头部项目集成计划🌟‼️.pdf | 3 | 4 | ~8s |
+| **合计** | **137** | **295** | — |
+
+**踩坑记录**：
+- `token_chunk_size`、`chunk_overlap`、`chunks_to_combine` 参数在 API 中默认 None，必须显式传入（200, 20, 1）
+- `embedding_provider` 和 `embedding_model` 也必须显式传入 `sentence-transformer` / `all-MiniLM-L6-v2`
+- `docker-compose.yml` 中 `EMBEDDING_MODEL` 和 `EMBEDDING_PROVIDER` 默认值为空字符串，已修复为实际值
+- DeepSeek API 不支持 `response_format`（structured output），代码已有检测逻辑（检查 `OPENAI_API_BASE` 中是否含 `deepseek`），容器重启后生效
+- 抽取过程会删除 merged_files 中的文件，失败后重试需重新 upload
+
+**代码改动**：
+- `docker-compose.yml`：设置 `EMBEDDING_MODEL`、`EMBEDDING_PROVIDER`、`MAX_TOKEN_CHUNK_SIZE` 默认值
+
+---
+
+### Step 2.3 — 在 Neo4j 中验证抽取结果 ✅
+**状态**：已完成
+**完成时间**：2026-06-10
+**验证结果**：
+- ✅ 节点数 137（≥ 20 要求）
+- ✅ 关系数 295（≥ 30 要求）
+- 通过 `/sources_list` API 确认 6 份文档状态均为 Completed
+
+---
+
 ## 阶段一完成总结
 
-**对 Fork 代码的改动**（仅 2 个文件，均为部署适配，不影响业务逻辑）：
+**对 Fork 代码的改动**（共 3 个文件，均为部署/配置适配，不影响业务逻辑）：
 1. `backend/Dockerfile`：workers 8→2, threads 8→4（防 8GB 内存 OOM）
 2. `backend/constraints.txt`：去掉 `+cpu` 后缀（Apple Silicon 兼容）
+3. `docker-compose.yml`：EMBEDDING_MODEL/EMBEDDING_PROVIDER/MAX_TOKEN_CHUNK_SIZE 默认值
 
 **配置文件**（不在 git 中，通过 .env 管理）：
 - `backend/.env`：Neo4j 连接 + DeepSeek API + 嵌入模型配置

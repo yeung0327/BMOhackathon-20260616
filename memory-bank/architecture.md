@@ -3,6 +3,7 @@
 ## 项目位置
 
 代码仓库：`/Users/yangqianqian/Desktop/llm-graph-builder/`（Fork 自 neo4j-labs/llm-graph-builder）
+memory-bank：`/Users/yangqianqian/Desktop/BMOhackathon-20260616/memory-bank/`
 
 ---
 
@@ -35,14 +36,47 @@ llm-graph-builder/
 | `src/graph_query.py` | 图谱查询逻辑（子图、邻居节点等） |
 | `src/neighbours.py` | 邻居节点查询（探索式浏览的后端支撑） |
 | `src/create_chunks.py` | 文档分块逻辑 |
+| `src/make_relationships.py` | 创建 chunk embeddings 和关系 |
 | `src/entities/` | 实体抽取相关模块 |
+| `src/entities/source_extract_params.py` | 抽取参数定义（含默认值问题） |
 | `src/communities.py` | 社区检测算法 |
 | `src/QA_integration.py` | 问答集成（GraphRAG） |
 | `src/document_sources/` | 文档来源处理（本地/S3/Wiki等） |
 | `src/shared/` | 共享工具函数 |
+| `src/shared/common_fn.py` | 通用函数（load_embedding_model、formatted_time 等） |
+| `score.py` | FastAPI 应用主文件（路由定义在此） |
 | `Dockerfile` | 后端容器镜像定义 |
 | `requirements.txt` | Python 依赖 |
+| `constraints.txt` | 依赖约束（已修改去掉 +cpu） |
 | `example.env` | 环境变量模板 |
+
+### 关键 API 端点
+
+| 端点 | 方法 | 作用 |
+|------|------|------|
+| `/health` | GET | 健康检查 |
+| `/connect` | POST | 验证 Neo4j + 嵌入模型连接 |
+| `/upload` | POST | 上传文档（multipart/form-data） |
+| `/extract` | POST | 触发实体关系抽取（form-urlencoded） |
+| `/sources_list` | POST | 获取已上传文档列表及状态 |
+| `/chat_bot` | POST | 智能问答（GraphRAG） |
+| `/graph_query` | POST | 图谱查询 |
+| `/get_neighbours` | POST | 获取邻居节点 |
+| `/delete_document_and_entities` | POST | 删除文档及关联实体 |
+
+### `/extract` 必传参数（踩坑总结）
+
+```
+uri, userName, password, database    # Neo4j 连接
+model=openai_gpt_4o_mini             # LLM 模型
+source_type=local file               # 来源类型
+file_name=xxx.pdf                    # 文件名
+token_chunk_size=200                 # ⚠️ 默认None会报错
+chunk_overlap=20                     # ⚠️ 默认None会报错
+chunks_to_combine=1                  # ⚠️ 默认None会报错
+embedding_provider=sentence-transformer  # ⚠️ 默认None会报错
+embedding_model=all-MiniLM-L6-v2        # ⚠️ 默认None会报错
+```
 
 ### LLM 配置方式（DeepSeek via OpenAI 兼容层）
 
@@ -53,6 +87,12 @@ OPENAI_API_BASE=https://api.deepseek.com/v1
 ```
 
 原理：`ChatOpenAI` 类自动读取 `OPENAI_API_BASE` 环境变量作为请求地址。DeepSeek API 与 OpenAI 格式完全兼容，零代码改动。
+
+**注意**：DeepSeek 不支持 `response_format`（structured output），代码在 `src/llm.py:205` 有检测逻辑：
+```python
+if supports_structured_output and not isinstance(llm, ChatGroq) and "deepseek" not in os.environ.get("OPENAI_API_BASE","").lower():
+```
+检测到 DeepSeek 时自动设置 `ignore_tool_usage=True`。
 
 ---
 
@@ -97,6 +137,13 @@ OPENAI_API_BASE=https://api.deepseek.com/v1
 - LLM 通过 DeepSeek API 远程调用（OpenAI 兼容格式），无需本地模型服务
 - Neo4j 连接使用 `bolt+s://` 协议（AuraDB Professional 实例）
 
+**docker-compose.yml 已修改的默认值**：
+```yaml
+- EMBEDDING_MODEL=${EMBEDDING_MODEL-all-MiniLM-L6-v2}
+- EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER-sentence-transformer}
+- MAX_TOKEN_CHUNK_SIZE=${MAX_TOKEN_CHUNK_SIZE-200}
+```
+
 ---
 
 ## 重要发现
@@ -106,3 +153,5 @@ OPENAI_API_BASE=https://api.deepseek.com/v1
 3. **多 LLM 支持**：后端支持 OpenAI、Gemini、Anthropic、Diffbot、Fireworks 等多模型，当前通过 OPENAI_API_BASE 指向 DeepSeek。
 4. **Graph 组件是独立目录**：`src/components/Graph/` 是图谱可视化核心，阶段三四的改造重点。
 5. **ChatBot 组件是独立目录**：`src/components/ChatBot/` 是对话功能核心，阶段五的改造重点。
+6. **抽取参数坑多**：`/extract` API 的多个参数默认 None，前端调用时已内置默认值，但 API 直接调用必须显式传入。
+7. **抽取流程会删除源文件**：成功或失败后 `merged_files/` 中的文件会被删除，重试需重新 upload。
