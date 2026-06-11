@@ -129,23 +129,23 @@ curl -X POST http://localhost:8000/extract \
 
 ---
 
-### Step 2.4 — 后端代码优化（抽取质量+幂等性）
+### Step 2.4 — 后端代码优化（抽取质量+幂等性）✅ 已完成
 
-**指令**：修改 `backend/src/main.py`，解决两个根本问题：
+**指令**：修改 `backend/src/main.py` + `docker-compose.yml`，解决三个问题：
 
-#### 2.4.1 — 失败重试自动清理（防重复节点）
-**改动位置**：`processing_source` 函数开头
-**逻辑**：如果文件之前状态是 Failed 且未指定 retry_condition，自动按 `delete_entities_and_start_from_beginning` 处理
-**改动量**：约 3 行
+#### 2.4.1 — 失败重试自动清理（防重复节点）✅
+**改动位置**：`processing_source` 函数，第 496-499 行
+**逻辑**：获取文档状态后，如果 Status == Failed 且未指定 retry_condition，自动执行 QUERY_TO_DELETE_EXISTING_ENTITIES
 
-#### 2.4.2 — chunk_size 自适应文档长度（防短文档碎片化）
-**改动位置**：`get_chunkId_chunkDoc_list` 函数
-**逻辑**：如果文档总 token 数 < token_chunk_size × 3，整篇当一个 chunk
-**改动量**：约 5 行
+#### 2.4.2 — chunk_size 自适应文档长度（防短文档碎片化）✅
+**改动位置**：`get_chunkId_chunkDoc_list` 函数，第 730-734 行
+**逻辑**：如果文档总字符数 < token_chunk_size × 4 × 3，自动放大 token_chunk_size
 
-**验证**：
-- 短文档（交流纪要，~1800字）整篇作为一个 chunk 抽取，节点数应 ≥10
-- 模拟 extract 失败→重试，不产生重复 Chunk 节点
+#### 2.4.3 — MAX_TOKEN_CHUNK_SIZE 默认值修复 ✅
+**改动位置**：`docker-compose.yml` 第 30 行
+**修复**：默认值从 200 改为 10000（200 会导致 Non-Neo4j 用户 chunk 数被限制为 1）
+
+**验证结果**：交流纪要从 3 节点/4 关系 → 64 节点/120 关系 ✅
 
 ---
 

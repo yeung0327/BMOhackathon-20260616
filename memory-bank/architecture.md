@@ -142,10 +142,14 @@ if supports_structured_output and not isinstance(llm, ChatGroq) and "deepseek" n
 # backend environment
 - EMBEDDING_MODEL=${EMBEDDING_MODEL-all-MiniLM-L6-v2}
 - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER-sentence-transformer}
-- MAX_TOKEN_CHUNK_SIZE=${MAX_TOKEN_CHUNK_SIZE-200}
+- MAX_TOKEN_CHUNK_SIZE=${MAX_TOKEN_CHUNK_SIZE-10000}
 # frontend build args
 - VITE_LLM_MODELS=${VITE_LLM_MODELS-openai_gpt_4o_mini}
 ```
+
+**backend/src/main.py 改动**：
+1. `processing_source` 函数（第496-499行）：Failed 状态自动清理旧实体，防重复节点
+2. `get_chunkId_chunkDoc_list` 函数（第730-734行）：短文档自适应 chunk_size，防碎片化抽取
 
 ---
 

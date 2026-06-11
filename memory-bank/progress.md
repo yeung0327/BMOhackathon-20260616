@@ -150,19 +150,48 @@
 
 ---
 
-### 待解决问题（讨论结论，待实施）
+### Step 2.4 — 后端代码优化（抽取质量+幂等性）✅
+**状态**：已完成
+**完成时间**：2026-06-11
 
-#### 问题 1：图谱重复节点 — 决定改代码
-**根因**：extract 失败后重试时，代码默认不清理旧 Chunk，直接创建新一批 → 重复
-**根本解法**：改 `backend/src/main.py` 的 `processing_source` 函数，失败重试时自动清理旧 Chunk/Entity
-**改动量**：约 3 行代码
-**状态**：待实施
+#### 2.4.1 — 失败重试自动清理（防重复节点）✅
+**改动位置**：`backend/src/main.py` 第 496-499 行（`processing_source` 函数内）
+**逻辑**：获取文档状态后，如果 Status == Failed 且未指定 retry_condition，自动执行 `QUERY_TO_DELETE_EXISTING_ENTITIES` 清理旧实体
+**代码**：
+```python
+if len(result) > 0 and result[0]['Status'] == 'Failed' and params.retry_condition in ["", None]:
+    logging.info(f"Auto-cleanup: file {params.file_name} was Failed, deleting existing entities before retry")
+    execute_graph_query(graph, QUERY_TO_DELETE_EXISTING_ENTITIES, params={"filename": params.file_name})
+```
 
-#### 问题 2：短文档抽取质量差（chunk_size 不合理）— 决定改代码
-**根因**：`token_chunk_size=200` 固定值，短文档（如1848字符的交流纪要）被切成碎片，每个 chunk 上下文不足，LLM 只抽出 3 个节点
-**根本解法**：改 `backend/src/main.py` 的 `get_chunkId_chunkDoc_list` 函数，chunk_size 自适应文档长度——短文档整篇当一个 chunk 送 LLM
-**改动量**：约 5 行代码
-**状态**：待实施
+#### 2.4.2 — chunk_size 自适应文档长度（防短文档碎片化）✅
+**改动位置**：`backend/src/main.py` 第 730-734 行（`get_chunkId_chunkDoc_list` 函数内）
+**逻辑**：如果文档总字符数 < token_chunk_size × 4 × 3（约3个chunk的量），自动放大 token_chunk_size 使整篇作为一个 chunk
+**代码**：
+```python
+total_text_len = sum(len(p.page_content) for p in pages)
+if total_text_len < token_chunk_size * 4 * 3:
+    token_chunk_size = max(token_chunk_size, total_text_len // 4 + 1)
+    logging.info(f"Short document ({total_text_len} chars), adaptive token_chunk_size={token_chunk_size}")
+```
+
+#### 2.4.3 — MAX_TOKEN_CHUNK_SIZE 默认值修复 ✅
+**改动位置**：`docker-compose.yml` 第 30 行
+**原因**：`MAX_TOKEN_CHUNK_SIZE=200` 导致 `chunk_to_be_created = 200/200 = 1`，Non-Neo4j 用户被限制只能创建 1 个 chunk
+**修复**：`MAX_TOKEN_CHUNK_SIZE` 默认值从 200 改为 10000
+
+**验证结果**（交流纪要文档重新抽取）：
+| 指标 | 修复前 | 修复后 |
+|------|--------|--------|
+| 节点数 | 3 | **64** |
+| 关系数 | 4 | **120** |
+| 实体节点 | — | **55** |
+| 实体间关系 | — | **43** |
+| 日志确认 | — | `Short document (1772 chars), adaptive token_chunk_size=444` |
+
+---
+
+### 待解决问题
 
 #### 问题 3：图谱结构扁平（星状辐射）+ 关系标签英文 — 待讨论
 **根因**：
@@ -179,11 +208,15 @@
 
 ## 阶段一+二 代码改动总结
 
-**对 Fork 代码的改动**（共 4 处，`docker-compose.yml` 中）：
+**对 Fork 代码的改动**（共 6 处）：
 1. `backend/Dockerfile`：workers 8→2, threads 8→4（防 8GB 内存 OOM）
 2. `backend/constraints.txt`：去掉 `+cpu` 后缀（Apple Silicon 兼容）
-3. `docker-compose.yml`：EMBEDDING_MODEL/EMBEDDING_PROVIDER/MAX_TOKEN_CHUNK_SIZE 默认值
+3. `docker-compose.yml`：EMBEDDING_MODEL/EMBEDDING_PROVIDER 默认值
 4. `docker-compose.yml`：VITE_LLM_MODELS 默认值设为 `openai_gpt_4o_mini`
+5. `docker-compose.yml`：MAX_TOKEN_CHUNK_SIZE 默认值从 200 改为 10000（防 Non-Neo4j 用户 chunk 数被限制为 1）
+6. `backend/src/main.py`：
+   - `processing_source` 函数：Failed 状态自动清理旧实体（第 496-499 行）
+   - `get_chunkId_chunkDoc_list` 函数：短文档自适应 chunk_size（第 730-734 行）
 
 **配置文件**（不在 git 中，通过 .env 管理）：
 - `backend/.env`：Neo4j 连接 + DeepSeek API + 嵌入模型配置
