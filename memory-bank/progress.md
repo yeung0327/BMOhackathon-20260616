@@ -191,26 +191,56 @@ if total_text_len < token_chunk_size * 4 * 3:
 
 ---
 
-### Step 2.5 — 关系标签中文化 ✅
+### Step 2.5 — 关系标签中文化 + 层级化指令 ✅
 **状态**：已完成
 **完成时间**：2026-06-11
-**改动位置**：`backend/src/shared/constants.py` 第 884-887 行
-**改动内容**：在 `ADDITIONAL_INSTRUCTIONS` 常量末尾追加中文指令：
+**改动位置**：`backend/src/shared/constants.py` 第 884-889 行
+**改动内容**：在 `ADDITIONAL_INSTRUCTIONS` 常量末尾追加两段指令：
 ```
 请务必使用中文命名所有关系类型（如：属于、开发了、依赖于、包含、用于、基于），绝对不要使用英文命名关系。实体名称也必须使用中文。
+请建立层级化的实体关系结构：如果一个概念是另一个概念的子概念、组成部分或具体实例，请用"包含"、"属于"、"子类型"等关系将它们连接起来，形成树状层级（主题→子主题→细节），而不是把所有细节都作为独立的顶级实体。优先识别实体之间的从属、因果和依赖关系。
 ```
-**效果**：所有后续 extract 操作的 LLM 实体抽取都会强制使用中文关系标签，无需每次手动传 `additional_instructions` 参数。
-**部署方式**：`docker cp` + `docker compose restart`（因构建缓存被清导致无法 `--build`，改为手动复制文件进容器）
-**注意**：`PART_OF`、`NEXT_CHUNK` 等系统内部关系是代码硬编码的结构性关系（Document→Chunk→Chunk），不受 LLM 控制，无法改为中文——这些在前端展示时可隐藏。
+**效果**：LLM 抽取时强制中文关系标签 + 层级化结构
+**部署方式**：`docker cp` + `docker compose restart`
+**注意**：`PART_OF`、`NEXT_CHUNK` 等系统内部结构关系是代码硬编码，前端展示时隐藏即可
 
 ---
 
-### 待解决问题
+### Step 2.6 — 清空重抽 ✅
+**状态**：已完成
+**完成时间**：2026-06-11
+**操作**：
+1. 清空 Neo4j（`MATCH (n) DETACH DELETE n`）
+2. 重新 upload 6 份文档
+3. 用优化后的参数（`chunks_to_combine=5`）重新 extract
 
-#### 问题：图谱结构扁平（星状辐射）— 待实施
-**根因**：`chunks_to_combine=1`，LLM 每次只看 1 个 chunk，无法识别跨段落因果链
-**解法**：extract 时设 `chunks_to_combine=5`，让 LLM 一次看更多上下文
-**状态**：待清空重抽时一并解决（Step 2.6）
+**抽取结果**：
+
+| 文档 | 节点数 | 关系数 |
+|------|--------|--------|
+| 飞桨常用词汇.pdf | 199 | 1067 |
+| PP-OCRv6端侧载体部署可行性调研.pdf | 232 | 1426 |
+| 5.13深圳倍加宝公司交流纪要.pdf | 74 | 379 |
+| Openclaw接入文心大模型效果初步评估.pdf | 163 | 916 |
+| 【运营规划】PaddleOCR头部项目集成计划.pdf | 245 | 1635 |
+| 专项：PaddleOCR头部项目集成计划🌟‼️.pdf | 227 | 1485 |
+| **合计** | **1140** | **6908** |
+
+**对比**：之前 137 节点/295 关系 → 现在 1140 节点/6908 关系
+**验证**：
+- ✅ 关系标签中文
+- ✅ 层级结构合理（用户确认 Entity 子图效果"很完美"）
+- ✅ 短文档节点数合理（交流纪要 74 个节点）
+
+---
+
+### Step 2.7 — 验证图谱查询 API ⏸️
+**状态**：待验证（网络恢复后）
+**原因**：当前网络受限，AuraDB 实例频繁暂停，无法连通
+
+### Step 2.8 — 验证问答 API ⏸️
+**状态**：待验证（网络恢复后）
+**原因**：同上
 
 ---
 
@@ -225,7 +255,7 @@ if total_text_len < token_chunk_size * 4 * 3:
 6. `backend/src/main.py`：
    - `processing_source` 函数：Failed 状态自动清理旧实体（第 496-499 行）
    - `get_chunkId_chunkDoc_list` 函数：短文档自适应 chunk_size（第 730-734 行）
-7. `backend/src/shared/constants.py`：ADDITIONAL_INSTRUCTIONS 追加中文关系标签指令（第 887 行）
+7. `backend/src/shared/constants.py`：ADDITIONAL_INSTRUCTIONS 追加中文关系标签 + 层级化结构指令（第 887-889 行）
 
 **配置文件**（不在 git 中，通过 .env 管理）：
 - `backend/.env`：Neo4j 连接 + DeepSeek API + 嵌入模型配置
