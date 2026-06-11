@@ -1,5 +1,13 @@
 # DESIGN.md — Roots & Shoots 知识宇宙
 
+## References
+
+- [awesome-design-md](https://github.com/VoltAgent/awesome-design-md) — DESIGN.md 规范参考
+- [React Bits](https://github.com/topics/react-bits) — 动态背景与 UI 动效组件库
+- [reactbits.dev](https://reactbits.dev) — React Bits 文档与组件预览
+
+---
+
 ## 1. Visual Theme & Atmosphere
 
 - **Mood**: 深邃宇宙感 — 纯黑/深蓝背景，节点像星星发光，连线像星座，整体安静深邃
