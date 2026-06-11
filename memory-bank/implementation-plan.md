@@ -149,13 +149,12 @@ curl -X POST http://localhost:8000/extract \
 
 ---
 
-### Step 2.5 — 抽取指令优化（图谱结构+中文化）— 待讨论
+### Step 2.5 — 抽取指令优化（中文化）✅ 已完成
 
-**目标**：
-- 图谱形成链式因果结构（A→B→C），而非星状辐射
-- 关系标签使用中文
-**方向**：通过 `additional_instructions` + `chunks_to_combine` 调优
-**状态**：具体指令措辞和结构待进一步讨论确定
+**目标**：关系标签使用中文
+**改动**：修改 `backend/src/shared/constants.py` 的 `ADDITIONAL_INSTRUCTIONS` 常量，追加中文指令
+**效果**：所有后续 extract 的实体关系标签均为中文，无需每次手动传参
+**注意**：`PART_OF`、`NEXT_CHUNK` 等系统内部结构关系是代码硬编码，不受 LLM 控制，前端展示时隐藏即可
 
 ---
 

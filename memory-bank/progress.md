@@ -191,24 +191,32 @@ if total_text_len < token_chunk_size * 4 * 3:
 
 ---
 
+### Step 2.5 — 关系标签中文化 ✅
+**状态**：已完成
+**完成时间**：2026-06-11
+**改动位置**：`backend/src/shared/constants.py` 第 884-887 行
+**改动内容**：在 `ADDITIONAL_INSTRUCTIONS` 常量末尾追加中文指令：
+```
+请务必使用中文命名所有关系类型（如：属于、开发了、依赖于、包含、用于、基于），绝对不要使用英文命名关系。实体名称也必须使用中文。
+```
+**效果**：所有后续 extract 操作的 LLM 实体抽取都会强制使用中文关系标签，无需每次手动传 `additional_instructions` 参数。
+**部署方式**：`docker cp` + `docker compose restart`（因构建缓存被清导致无法 `--build`，改为手动复制文件进容器）
+**注意**：`PART_OF`、`NEXT_CHUNK` 等系统内部关系是代码硬编码的结构性关系（Document→Chunk→Chunk），不受 LLM 控制，无法改为中文——这些在前端展示时可隐藏。
+
+---
+
 ### 待解决问题
 
-#### 问题 3：图谱结构扁平（星状辐射）+ 关系标签英文 — 待讨论
-**根因**：
-- 默认 prompt 让 LLM 抽取独立三元组 (A, 关系, B)，互不关联 → 星状结构
-- DeepSeek 默认用英文命名关系类型
-**初步方向**：
-- 通过 `additional_instructions` 指令引导 LLM 抽取链式因果/时序关系
-- `chunks_to_combine` 设大（5+），让 LLM 看到更多上下文以识别跨段落因果链
-- 前端阶段三隐藏 Document/Chunk 结构节点，只展示 Entity 关系
-- 具体指令措辞和图谱结构 **待进一步讨论确定**
-**状态**：待讨论
+#### 问题：图谱结构扁平（星状辐射）— 待实施
+**根因**：`chunks_to_combine=1`，LLM 每次只看 1 个 chunk，无法识别跨段落因果链
+**解法**：extract 时设 `chunks_to_combine=5`，让 LLM 一次看更多上下文
+**状态**：待清空重抽时一并解决（Step 2.6）
 
 ---
 
 ## 阶段一+二 代码改动总结
 
-**对 Fork 代码的改动**（共 6 处）：
+**对 Fork 代码的改动**（共 7 处）：
 1. `backend/Dockerfile`：workers 8→2, threads 8→4（防 8GB 内存 OOM）
 2. `backend/constraints.txt`：去掉 `+cpu` 后缀（Apple Silicon 兼容）
 3. `docker-compose.yml`：EMBEDDING_MODEL/EMBEDDING_PROVIDER 默认值
@@ -217,7 +225,13 @@ if total_text_len < token_chunk_size * 4 * 3:
 6. `backend/src/main.py`：
    - `processing_source` 函数：Failed 状态自动清理旧实体（第 496-499 行）
    - `get_chunkId_chunkDoc_list` 函数：短文档自适应 chunk_size（第 730-734 行）
+7. `backend/src/shared/constants.py`：ADDITIONAL_INSTRUCTIONS 追加中文关系标签指令（第 887 行）
 
 **配置文件**（不在 git 中，通过 .env 管理）：
 - `backend/.env`：Neo4j 连接 + DeepSeek API + 嵌入模型配置
 - `frontend/.env`：后端 API 地址 + 模型选择 + 跳过认证
+
+**部署注意**：
+- 构建缓存已被 `docker system prune` 清除，8GB Mac 无法从头 build（OOM）
+- 当前通过 `docker cp` + `docker compose restart` 手动同步代码到容器
+- 下次需要完整 build 时，需先在 Docker Desktop 临时调高内存到 6GB

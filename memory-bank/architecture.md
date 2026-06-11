@@ -151,6 +151,10 @@ if supports_structured_output and not isinstance(llm, ChatGroq) and "deepseek" n
 1. `processing_source` 函数（第496-499行）：Failed 状态自动清理旧实体，防重复节点
 2. `get_chunkId_chunkDoc_list` 函数（第730-734行）：短文档自适应 chunk_size，防碎片化抽取
 
+**backend/src/shared/constants.py 改动**：
+- `ADDITIONAL_INSTRUCTIONS`（第884-887行）：追加中文指令，强制 LLM 用中文命名关系类型和实体
+- 注意：`PART_OF`、`NEXT_CHUNK`、`FIRST_CHUNK`、`HAS_ENTITY` 等是代码硬编码的结构性关系，不受此指令影响
+
 ---
 
 ## 重要发现
