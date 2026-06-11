@@ -265,3 +265,42 @@ if total_text_len < token_chunk_size * 4 * 3:
 - 构建缓存已被 `docker system prune` 清除，8GB Mac 无法从头 build（OOM）
 - 当前通过 `docker cp` + `docker compose restart` 手动同步代码到容器
 - 下次需要完整 build 时，需先在 Docker Desktop 临时调高内存到 6GB
+
+---
+
+## 阶段三：前端 UI 深色宇宙风格改造
+
+### Step 3.1 — 启动官方前端 ✅
+**状态**：已完成
+**完成时间**：2026-06-11
+**操作**：
+1. `npm install` 安装前端依赖
+2. Vite dev server 启动在 `http://localhost:5173`
+**修复**：
+- `frontend/.env` 的 `VITE_CHAT_MODES` 使用了无效值 `hybrid`，改为 `vector,graph_vector,graph,graph_vector_fulltext`
+- `VITE_LLM_MODELS` 从 `ollama_llama3` 改为 `openai_gpt_4o_mini`
+**验证**：页面正常打开，无致命 JS 错误
+
+---
+
+### Step 3.2 + 3.3 + 3.6 — 全局样式 + 品牌替换（进行中）
+**状态**：进行中
+**已完成的改动**：
+1. `frontend/src/index.css`：覆盖 NDL 深色主题变量为宇宙深蓝配色（#0a0a1a）
+2. `frontend/src/context/ThemeWrapper.tsx`：强制默认 dark 模式
+3. `frontend/src/components/Layout/Header.tsx`：Neo4j Logo 替换为 "Roots & Shoots · 知识宇宙"
+4. `frontend/index.html`：页面标题改为 "Roots & Shoots · 知识宇宙"
+5. `DESIGN.md`：创建完整的前端设计规范文档
+
+**DESIGN.md 设计决策**：
+- 视觉风格：深邃宇宙感
+- 主色：金色 `#f59e0b`
+- 强调色：粉紫 `#c084fc`
+- 字体：JetBrains Mono 等宽
+- 节点：发光圆点 + 按类型着色
+- 动效：背景星空粒子
+- 布局：保持现有三栏
+- 圆角：8px
+- 对话气泡：用户金色 / AI 深灰
+- 连线：半透明细线
+
