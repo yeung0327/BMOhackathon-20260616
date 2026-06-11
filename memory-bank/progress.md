@@ -150,15 +150,30 @@
 
 ---
 
-### 待解决问题（讨论中，未执行）
+### 待解决问题（讨论结论，待实施）
 
-1. **图谱重复节点**：飞桨常用词汇.pdf 多次 upload 失败重试留下重复 Chunk 节点
-   - 方案：清空 Neo4j → 重新抽取（一次性解决）
-   - 根因：extract 失败时未传 `retry_condition=delete_entities_and_start_from_beginning`
-2. **图谱结构太扁平**：Chunk/Document 结构节点与 Entity 节点混在一起显示
-   - 方案：阶段三前端改造时过滤，只展示 Entity 节点
-3. **关系标签英文**：DeepSeek 默认用英文抽取关系类型
-   - 方案：重抽时在 `additional_instructions` 中指定用中文命名
+#### 问题 1：图谱重复节点 — 决定改代码
+**根因**：extract 失败后重试时，代码默认不清理旧 Chunk，直接创建新一批 → 重复
+**根本解法**：改 `backend/src/main.py` 的 `processing_source` 函数，失败重试时自动清理旧 Chunk/Entity
+**改动量**：约 3 行代码
+**状态**：待实施
+
+#### 问题 2：短文档抽取质量差（chunk_size 不合理）— 决定改代码
+**根因**：`token_chunk_size=200` 固定值，短文档（如1848字符的交流纪要）被切成碎片，每个 chunk 上下文不足，LLM 只抽出 3 个节点
+**根本解法**：改 `backend/src/main.py` 的 `get_chunkId_chunkDoc_list` 函数，chunk_size 自适应文档长度——短文档整篇当一个 chunk 送 LLM
+**改动量**：约 5 行代码
+**状态**：待实施
+
+#### 问题 3：图谱结构扁平（星状辐射）+ 关系标签英文 — 待讨论
+**根因**：
+- 默认 prompt 让 LLM 抽取独立三元组 (A, 关系, B)，互不关联 → 星状结构
+- DeepSeek 默认用英文命名关系类型
+**初步方向**：
+- 通过 `additional_instructions` 指令引导 LLM 抽取链式因果/时序关系
+- `chunks_to_combine` 设大（5+），让 LLM 看到更多上下文以识别跨段落因果链
+- 前端阶段三隐藏 Document/Chunk 结构节点，只展示 Entity 关系
+- 具体指令措辞和图谱结构 **待进一步讨论确定**
+**状态**：待讨论
 
 ---
 

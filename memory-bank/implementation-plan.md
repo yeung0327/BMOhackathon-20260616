@@ -129,15 +129,53 @@ curl -X POST http://localhost:8000/extract \
 
 ---
 
-### Step 2.4 — 补充演示数据（如需）
+### Step 2.4 — 后端代码优化（抽取质量+幂等性）
 
-**指令**：如 Step 2.3 中抽取质量不足，通过 Cypher 语句手动插入关键演示节点和关系，确保存在至少一条 3 节点以上的因果链。
+**指令**：修改 `backend/src/main.py`，解决两个根本问题：
 
-**验证**：在 Neo4j Browser 中执行路径查询，能返回一条包含 ≥3 个节点的因果链路径。
+#### 2.4.1 — 失败重试自动清理（防重复节点）
+**改动位置**：`processing_source` 函数开头
+**逻辑**：如果文件之前状态是 Failed 且未指定 retry_condition，自动按 `delete_entities_and_start_from_beginning` 处理
+**改动量**：约 3 行
+
+#### 2.4.2 — chunk_size 自适应文档长度（防短文档碎片化）
+**改动位置**：`get_chunkId_chunkDoc_list` 函数
+**逻辑**：如果文档总 token 数 < token_chunk_size × 3，整篇当一个 chunk
+**改动量**：约 5 行
+
+**验证**：
+- 短文档（交流纪要，~1800字）整篇作为一个 chunk 抽取，节点数应 ≥10
+- 模拟 extract 失败→重试，不产生重复 Chunk 节点
 
 ---
 
-### Step 2.5 — 验证图谱查询 API
+### Step 2.5 — 抽取指令优化（图谱结构+中文化）— 待讨论
+
+**目标**：
+- 图谱形成链式因果结构（A→B→C），而非星状辐射
+- 关系标签使用中文
+**方向**：通过 `additional_instructions` + `chunks_to_combine` 调优
+**状态**：具体指令措辞和结构待进一步讨论确定
+
+---
+
+### Step 2.6 — 清空重抽 + 验证
+
+**指令**：
+1. 清空 Neo4j（MATCH (n) DETACH DELETE n）
+2. 重新 upload 6 份文档
+3. 用优化后的代码 + 参数重新 extract
+4. 验证图谱质量
+
+**验证**：
+- 无重复节点
+- 短文档节点数合理（≥10）
+- 关系标签中文
+- 存在链式因果路径
+
+---
+
+### Step 2.7 — 验证图谱查询 API
 
 **指令**：通过 curl 或 Swagger 调用图谱查询 API，传入一个已存在的节点关键词。
 
@@ -145,7 +183,7 @@ curl -X POST http://localhost:8000/extract \
 
 ---
 
-### Step 2.6 — 验证问答 API
+### Step 2.8 — 验证问答 API
 
 **指令**：通过 curl 或 Swagger 调用 chat API，提问一个能从图谱中回答的问题。
 
