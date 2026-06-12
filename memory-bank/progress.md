@@ -283,24 +283,74 @@ if total_text_len < token_chunk_size * 4 * 3:
 
 ---
 
-### Step 3.2 + 3.3 + 3.6 — 全局样式 + 品牌替换（进行中）
-**状态**：进行中
-**已完成的改动**：
-1. `frontend/src/index.css`：覆盖 NDL 深色主题变量为宇宙深蓝配色（#0a0a1a）
-2. `frontend/src/context/ThemeWrapper.tsx`：强制默认 dark 模式
-3. `frontend/src/components/Layout/Header.tsx`：Neo4j Logo 替换为 "Roots & Shoots · 知识宇宙"
-4. `frontend/index.html`：页面标题改为 "Roots & Shoots · 知识宇宙"
-5. `DESIGN.md`：创建完整的前端设计规范文档
+### Step 3.2 — 定位全局样式入口 ✅
+**状态**：已完成
+**完成时间**：2026-06-12
+**结果**：
+- 全局样式入口：`frontend/src/index.css`
+- NDL CSS Variables 原始定义：`node_modules/@neo4j-ndl/base/lib/tokens/css/tokens.css`
+- 通过 `.ndl-theme-dark` class 覆盖生效
 
-**DESIGN.md 设计决策**：
-- 视觉风格：深邃宇宙感
-- 主色：金色 `#f59e0b`
-- 强调色：粉紫 `#c084fc`
-- 字体：JetBrains Mono 等宽
-- 节点：发光圆点 + 按类型着色
-- 动效：背景星空粒子
-- 布局：保持现有三栏
-- 圆角：8px
-- 对话气泡：用户金色 / AI 深灰
-- 连线：半透明细线
+---
+
+### Step 3.3 — 覆盖全局配色为深色主题 ✅
+**状态**：已完成
+**完成时间**：2026-06-12
+**改动**：`frontend/src/index.css` — 从 9 个变量扩展为完整覆盖（~65 个变量）
+**配色方案**：
+- Primary: 金色 `#f59e0b`
+- Neutral 背景: `#0a0a1a` → `#2a2a4a` 分层
+- Neutral 文字: `#e8e8f0` / `#9ca3af`
+- Neutral 边框: `#2a2a4a`
+- Discovery: 粉紫 `#c084fc`
+- Success: `#10b981`
+- Danger: `#ef4444`
+- Warning: `#f59e0b`
+
+---
+
+### Step 3.4 — 改造图谱区域样式 ⚠️ 已回滚
+**状态**：已回滚（代码改动已撤销）
+**原因**：尝试内嵌图谱到中间栏（替代弹窗模式）导致严重 UI 问题——Preview Graph 按钮无法正常工作
+**已回滚的改动**：
+- `GraphViewModal.tsx` bg-white → 深色背景
+- `SchemaViz.tsx` 同上
+- `Constants.ts` nvlOptions 添加 styling
+- `Utils.ts` processGraphData 固定色
+- `App.css` layout grid 调整
+- `PageLayout.tsx` 默认展开三栏
+- `Content.tsx` 图谱内嵌改造
+- 新文件 `GraphPanel.tsx`（已删除）
+
+**教训**：
+- 图谱弹窗模式（GraphViewModal as Dialog）是官方设计的核心交互，深度耦合了状态管理
+- 将其改为内嵌模式需要更深入理解 Content.tsx 的状态流（openGraphView/viewPoint/selectedRows/childRef）
+- 下次应先在独立分支验证可行性再动主代码
+
+---
+
+### Step 3.5 — 改造侧边栏对话界面样式 ❌ 未开始
+**状态**：未开始（Step 3.4 回滚后此步尚未执行）
+
+---
+
+### Step 3.6 — 替换品牌元素 ✅
+**状态**：已完成
+**完成时间**：2026-06-11
+**改动**：
+1. `frontend/src/components/Layout/Header.tsx`：Neo4j Logo 替换为 "Roots & Shoots · 知识宇宙"
+2. `frontend/index.html`：页面标题改为 "Roots & Shoots · 知识宇宙"
+3. `frontend/src/context/ThemeWrapper.tsx`：强制默认 dark 模式
+4. `DESIGN.md`：创建完整的前端设计规范文档
+
+---
+
+### 当前保留的前端改动（Step 3.2 + 3.3 + 3.6）
+
+| 文件 | 改动内容 |
+|------|----------|
+| `frontend/index.html` | title 改为 "Roots & Shoots · 知识宇宙" |
+| `frontend/src/index.css` | 完整深色主题变量覆盖 + chatbot prose 样式 + NVL 背景 |
+| `frontend/src/context/ThemeWrapper.tsx` | 强制 dark 模式 |
+| `frontend/src/components/Layout/Header.tsx` | Logo 替换为品牌名 |
 
