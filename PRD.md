@@ -1,9 +1,6 @@
 # PRD：Roots & Shoots 
 
 > 百度BMO黑客松参赛项目
-> 总仓库：https://github.com/yeung0327/BMOhackathon-20260616
-> 后端仓库：https://github.com/yeung0327/llm-graph-builder（Fork）
-
 ---
 
 ## 一、项目背景与痛点
