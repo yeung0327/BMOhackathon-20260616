@@ -80,7 +80,7 @@
 
 ## 六、后端依赖说明
 
-后端使用开源的 **llm-graph-builder**（Fork 到 yeung0327/llm-graph-builder），需要完成：
+后端需要完成：
 
 | 组件 | 说明 |
 |------|------|
