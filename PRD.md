@@ -135,8 +135,7 @@
 
 2. **所有文件必须上传到 GitHub**
    - 总仓库：https://github.com/yeung0327/BMOhackathon-20260616（前端代码 + 所有 MD 文件）
-   - 后端仓库：https://github.com/yeung0327/llm-graph-builder（Fork 的原项目）
-
+     
 3. **每天结束前必须 push 一次**
 
 ### 任务卡中的 Git 格式示例
