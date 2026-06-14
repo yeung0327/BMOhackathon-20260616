@@ -197,4 +197,4 @@ yarn dev
 
 ## 📝 License
 
-本项目为百度 BMO 黑客松参赛作品，仅供学习交流使用。后端基于 [neo4j-labs/llm-graph-builder](https://github.com/neo4j-labs/llm-graph-builder) 开源项目。
+本项目为百度 BMO 黑客松参赛作品，仅供学习交流使用。
