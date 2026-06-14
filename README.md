@@ -4,7 +4,7 @@
 
 🌐 **在线演示**：https://roots-shoots-frontend.onrender.com *(部署后更新)*
 
-百度 BMO 黑客松 2026 参赛作品 | 单人 + AI 协作开发
+百度 BMO 黑客松 2026 参赛作品 
 
 ---
 
