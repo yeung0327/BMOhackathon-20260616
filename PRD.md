@@ -30,7 +30,7 @@
 | 层级 | 技术选型 | 职责 |
 |------|----------|------|
 | **前端** | Next.js + TypeScript + Three.js | 3D 图谱可视化、LLM 对话界面 |
-| **后端** | llm-graph-builder（开源，Fork 到我的仓库） | 文档上传、LLM 抽取实体关系、GraphRAG 问答 |
+| **后端** | llm-graph-builder| 文档上传、LLM 抽取实体关系、GraphRAG 问答 |
 | **数据层** | Neo4j AuraDB（免费云实例） | 存储节点（事件）和关系（因果/时序） |
 | **LLM 策略** | DeepSeek API（deepseek-chat，OpenAI 兼容格式，零本地资源） | 实体抽取 + 智能问答 |
 
