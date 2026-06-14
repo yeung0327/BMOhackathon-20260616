@@ -1,6 +1,6 @@
 # progress.md — 开发进度记录
 
-> 最后更新：2026-06-14
+> 最后更新：2026-06-15
 
 ---
 
@@ -78,15 +78,25 @@
 
 ---
 
+## 文档摘要功能 ✅ 已完成（2026-06-15）
+
+- [x] 点击 Document 节点时，右侧属性面板自动调用 LLM 生成 3-5 句摘要
+- [x] 使用 `fulltext` 模式调用 `/chat_bot` API（避免 graph 模式 Cypher 生成失败）
+- [x] `useRef` 缓存已生成的摘要，避免重复请求
+- [x] 加载动画（LoadingSpinner）+ 错误提示
+- [x] 改动文件：`frontend/src/components/Graph/GraphPropertiesPanel.tsx`
+
+---
+
 ## 已知问题
 
 ### Chat 的 vector/graph_vector 模式不可用
 
 **错误**：`Unsupported provider/model: all-minilm-l6-v2/all-MiniLM-L6-v2`
 
-**现状**：`mode=graph`（纯图谱模式）问答正常工作，`mode=vector` 和 `mode=graph_vector` 因 embedding provider 不匹配而报错。当前前端默认使用 graph_vector_fulltext 模式。
+**现状**：`mode=fulltext`（全文检索模式）问答正常工作。`mode=graph` 因 DeepSeek 生成无效 Cypher 而报错。`mode=vector` 和 `mode=graph_vector` 因 embedding provider 不匹配而报错。当前前端摘要功能使用 `fulltext` 模式。
 
-**影响**：问答可用（graph 模式），但检索精度可能不如 vector 模式。演示够用。
+**影响**：问答可用（fulltext 模式），演示够用。
 
 ---
 

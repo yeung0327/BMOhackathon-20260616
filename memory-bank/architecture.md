@@ -105,6 +105,7 @@ if supports_structured_output and not isinstance(llm, ChatGroq) and "deepseek" n
 | `src/index.css` | 全局样式（CSS Variables 定义在此） |
 | `src/App.css` | App 级别样式 |
 | `src/components/Graph/` | **图谱可视化组件**（核心改造目标） |
+| `src/components/Graph/GraphPropertiesPanel.tsx` | 节点属性面板 + Document 节点 AI 摘要（fulltext 模式） |
 | `src/components/ChatBot/` | **对话侧边栏组件**（核心改造目标） |
 | `src/components/Layout/` | 页面布局组件 |
 | `src/components/DataSources/` | 数据源管理（文件上传等） |
