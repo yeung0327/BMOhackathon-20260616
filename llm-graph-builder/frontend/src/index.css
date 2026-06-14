@@ -1,0 +1,195 @@
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+body {
+  margin: 0;
+  background-color: #0a0a1a !important;
+}
+
+/* Roots & Shoots 深色宇宙主题覆盖 — 基于 DESIGN.md 配色方案 */
+.ndl-theme-dark {
+  /* === Neutral 背景 === */
+  --theme-dark-palette-neutral-bg-default: 10 10 26 / 1;       /* #0a0a1a 页面主背景 */
+  --theme-dark-palette-neutral-bg-weak: 15 15 35 / 1;          /* #0f0f23 卡片/侧栏背景 */
+  --theme-dark-palette-neutral-bg-strong: 26 26 58 / 1;        /* #1a1a3a 输入框/悬浮背景 */
+  --theme-dark-palette-neutral-bg-stronger: 42 42 74 / 1;      /* #2a2a4a 更强背景 */
+  --theme-dark-palette-neutral-bg-strongest: 232 232 240 / 1;  /* #e8e8f0 反色场景 */
+  --theme-dark-palette-neutral-bg-on-bg-weak: 42 42 74 / 0.08;
+  --theme-dark-palette-neutral-bg-status: 156 163 175 / 1;     /* #9ca3af */
+
+  /* === Neutral 文字 === */
+  --theme-dark-palette-neutral-text-default: 232 232 240 / 1;  /* #e8e8f0 正文 */
+  --theme-dark-palette-neutral-text-weak: 207 209 212 / 1;     /* 辅助文字 */
+  --theme-dark-palette-neutral-text-weaker: 156 163 175 / 1;   /* #9ca3af 描述 */
+  --theme-dark-palette-neutral-text-weakest: 107 114 128 / 1;  /* 最弱文字 */
+  --theme-dark-palette-neutral-text-inverse: 10 10 26 / 1;     /* #0a0a1a */
+
+  /* === Neutral 图标/边框/交互 === */
+  --theme-dark-palette-neutral-icon: 232 232 240 / 1;          /* #e8e8f0 */
+  --theme-dark-palette-neutral-border-weak: 42 42 74 / 1;      /* #2a2a4a 分割线 */
+  --theme-dark-palette-neutral-border-strong: 82 82 120 / 1;   /* 强边框 */
+  --theme-dark-palette-neutral-border-strongest: 156 163 175 / 1;
+  --theme-dark-palette-neutral-hover: 245 158 11 / 0.08;       /* 金色微弱hover */
+  --theme-dark-palette-neutral-pressed: 245 158 11 / 0.15;
+
+  /* === Primary 金色 #f59e0b === */
+  --theme-dark-palette-primary-text: 245 158 11 / 1;           /* #f59e0b */
+  --theme-dark-palette-primary-icon: 245 158 11 / 1;
+  --theme-dark-palette-primary-bg-strong: 245 158 11 / 1;
+  --theme-dark-palette-primary-bg-weak: 245 158 11 / 0.15;     /* 用户气泡背景 */
+  --theme-dark-palette-primary-bg-status: 245 158 11 / 1;
+  --theme-dark-palette-primary-bg-selected: 245 158 11 / 0.15;
+  --theme-dark-palette-primary-border-strong: 245 158 11 / 1;
+  --theme-dark-palette-primary-border-weak: 245 158 11 / 0.3;
+  --theme-dark-palette-primary-focus: 217 119 6 / 1;           /* #d97706 */
+  --theme-dark-palette-primary-hover-strong: 217 119 6 / 1;
+  --theme-dark-palette-primary-hover-weak: 245 158 11 / 0.08;
+  --theme-dark-palette-primary-pressed-strong: 180 83 9 / 1;   /* #b45309 */
+  --theme-dark-palette-primary-pressed-weak: 245 158 11 / 0.12;
+
+  /* === Discovery 粉紫 #c084fc (强调色) === */
+  --theme-dark-palette-discovery-text: 192 132 252 / 1;        /* #c084fc */
+  --theme-dark-palette-discovery-icon: 192 132 252 / 1;
+  --theme-dark-palette-discovery-bg-strong: 192 132 252 / 1;
+  --theme-dark-palette-discovery-bg-weak: 192 132 252 / 0.1;
+  --theme-dark-palette-discovery-bg-status: 192 132 252 / 1;
+  --theme-dark-palette-discovery-border-strong: 192 132 252 / 1;
+  --theme-dark-palette-discovery-border-weak: 192 132 252 / 0.3;
+
+  /* === Success 绿色 #10b981 === */
+  --theme-dark-palette-success-text: 16 185 129 / 1;
+  --theme-dark-palette-success-icon: 16 185 129 / 1;
+  --theme-dark-palette-success-bg-strong: 16 185 129 / 1;
+  --theme-dark-palette-success-bg-weak: 16 185 129 / 0.1;
+  --theme-dark-palette-success-bg-status: 16 185 129 / 1;
+  --theme-dark-palette-success-border-strong: 16 185 129 / 1;
+  --theme-dark-palette-success-border-weak: 16 185 129 / 0.3;
+
+  /* === Danger 红色 #ef4444 === */
+  --theme-dark-palette-danger-text: 239 68 68 / 1;
+  --theme-dark-palette-danger-icon: 239 68 68 / 1;
+  --theme-dark-palette-danger-bg-strong: 239 68 68 / 1;
+  --theme-dark-palette-danger-bg-weak: 239 68 68 / 0.1;
+  --theme-dark-palette-danger-bg-status: 239 68 68 / 1;
+  --theme-dark-palette-danger-border-strong: 239 68 68 / 1;
+  --theme-dark-palette-danger-border-weak: 239 68 68 / 0.3;
+  --theme-dark-palette-danger-hover-strong: 220 38 38 / 1;     /* #dc2626 */
+  --theme-dark-palette-danger-hover-weak: 239 68 68 / 0.08;
+  --theme-dark-palette-danger-pressed-strong: 185 28 28 / 1;   /* #b91c1c */
+  --theme-dark-palette-danger-pressed-weak: 239 68 68 / 0.12;
+
+  /* === Warning 金色(复用主色) === */
+  --theme-dark-palette-warning-text: 245 158 11 / 1;
+  --theme-dark-palette-warning-icon: 245 158 11 / 1;
+  --theme-dark-palette-warning-bg-strong: 245 158 11 / 1;
+  --theme-dark-palette-warning-bg-weak: 245 158 11 / 0.1;
+  --theme-dark-palette-warning-bg-status: 245 158 11 / 1;
+  --theme-dark-palette-warning-border-strong: 245 158 11 / 1;
+  --theme-dark-palette-warning-border-weak: 245 158 11 / 0.3;
+}
+
+.ndl-progress-bar-wrapper .ndl-header .ndl-heading::after{
+  animation: none !important;
+}
+
+/* 图谱区域深色背景 + NVL canvas 样式 */
+#nvl-graph-preview {
+  background-color: #0a0a1a !important;
+}
+
+/* NVL 图谱节点发光效果 */
+.nvl-viz canvas {
+  background-color: #0a0a1a !important;
+}
+.bg-palette-neutral-bg-default {
+  background-color: #0a0a1a !important;
+}
+
+/* 图谱容器内的 SVG 节点发光 */
+.nvl-viz circle {
+  filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 12px currentColor);
+}
+.nvl-viz text {
+  fill: #e8e8f0 !important;
+  font-size: 11px;
+}
+.nvl-viz line,
+.nvl-viz path {
+  opacity: 0.6;
+  stroke: #4a5568 !important;
+}
+
+/* 对话侧栏 prose 文字适配深色主题 */
+.chatBotContainer .prose,
+.chatBotContainer .prose * {
+  color: #e8e8f0 !important;
+}
+.chatBotContainer .prose a {
+  color: #f59e0b !important;
+}
+.chatBotContainer .prose code {
+  color: #c084fc !important;
+  background-color: #1a1a3a !important;
+}
+.chatBotContainer .prose pre {
+  background-color: #0f0f23 !important;
+  border: 1px solid #2a2a4a;
+}
+
+/* Step 3.5 — 对话侧栏深色气泡样式 */
+
+/* AI 消息气泡 — 深灰底 */
+.chatBotContainer .n-bg-palette-neutral-bg-strong {
+  background-color: #1a1a3a !important;
+  border: 1px solid #2a2a4a;
+  border-radius: 12px !important;
+}
+
+/* 用户消息气泡 — 主色调半透明底 */
+.chatBotContainer .n-bg-palette-primary-bg-weak {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px !important;
+}
+
+/* 输入框深色风格 */
+.chatBotContainer .n-bg-palette-neutral-bg-default input {
+  background-color: #0f0f23 !important;
+  border-color: #2a2a4a !important;
+  color: #e8e8f0 !important;
+}
+.chatBotContainer .n-bg-palette-neutral-bg-default input::placeholder {
+  color: #6b7280 !important;
+}
+
+/* 聊天区域整体背景 */
+.chatBotContainer .n-bg-palette-neutral-bg-weak {
+  background-color: #0a0a1a !important;
+}
+
+/* 底部输入栏 */
+.chatBotContainer .n-bg-palette-neutral-bg-weak.flex {
+  background-color: #0f0f23 !important;
+  border-top: 1px solid #2a2a4a;
+}
+
+/* Step 6.2 — 搜索框引导体验：焦点微动效 */
+.chatbot-search-input input {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+.chatbot-search-input input:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2), 0 0 12px rgba(245, 158, 11, 0.1);
+  transform: scale(1.01);
+}

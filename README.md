@@ -73,23 +73,34 @@
 
 ```
 BMOhackathon-20260616/
-├── README.md                  ← 本文件，项目总览
-├── CLAUDE.md                  ← AI 开发者指引（上下文传递）
-├── PRD.md                     ← 产品需求文档
-├── DESIGN.md                  ← 视觉设计规范（配色、组件、动效）
-├── macPublish.command          ← Mac 一键 git 提交推送脚本
-└── memory-bank/               ← 开发记忆库（AI 协作核心）
-    ├── progress.md            ← 开发进度记录（最重要）
-    ├── implementation-plan.md ← 分步实施计划
-    ├── architecture.md        ← 项目架构与文件说明
-    ├── tech-stack.md          ← 技术选型与决策记录
-    └── design-doc.md          ← 产品功能设计文档
+├── README.md                   ← 本文件，项目总览
+├── CLAUDE.md                   ← AI 开发者指引（上下文传递）
+├── PRD.md                      ← 产品需求文档
+├── DESIGN.md                   ← 视觉设计规范（配色、组件、动效）
+├── macPublish.command           ← Mac 一键 git 提交推送脚本
+├── memory-bank/                ← 开发记忆库（AI 协作核心）
+│   ├── progress.md             ← 开发进度记录（最重要）
+│   ├── implementation-plan.md  ← 分步实施计划
+│   ├── architecture.md         ← 项目架构与文件说明
+│   ├── tech-stack.md           ← 技术选型与决策记录
+│   └── design-doc.md           ← 产品功能设计文档
+└── llm-graph-builder/          ← 核心代码（Fork 自 Neo4j Labs）
+    ├── backend/                ← Python FastAPI 后端
+    │   ├── src/                ← 核心逻辑（抽取、问答、图谱查询）
+    │   ├── Dockerfile          ← 后端容器镜像
+    │   ├── requirements.txt    ← Python 依赖
+    │   └── example.env         ← 环境变量模板
+    ├── frontend/               ← React + TypeScript 前端
+    │   ├── src/components/     ← UI 组件（Graph、ChatBot 等）
+    │   ├── src/services/       ← API 调用层
+    │   └── src/utils/          ← 工具函数与常量
+    └── docker-compose.yml      ← 一键启动编排
 ```
 
 ### 文件详细说明
 
-| 文件 | 用途 | 适合阅读者 |
-|------|------|-----------|
+| 文件/目录 | 用途 | 适合阅读者 |
+|-----------|------|-----------|
 | `README.md` | 项目总览、快速了解 | 所有人 |
 | `PRD.md` | 产品需求文档：痛点分析、功能范围、成功标准 | 评委、产品经理 |
 | `DESIGN.md` | 视觉设计系统：配色方案、组件样式、图谱渲染规则 | 设计师、前端开发 |
@@ -100,6 +111,9 @@ BMOhackathon-20260616/
 | `memory-bank/architecture.md` | 架构详解：目录结构、API 端点、踩坑记录 | 开发者 |
 | `memory-bank/tech-stack.md` | 技术选型决策：为什么选 DeepSeek、为什么不用 Three.js 等 | 技术评审 |
 | `memory-bank/design-doc.md` | 产品功能设计：交互流程、功能优先级 | 产品经理 |
+| `llm-graph-builder/backend/` | 后端源码：实体抽取、GraphRAG 问答、邻居查询 | 后端开发 |
+| `llm-graph-builder/frontend/` | 前端源码：深色宇宙主题、图谱探索、AI 摘要 | 前端开发 |
+| `llm-graph-builder/docker-compose.yml` | Docker 编排配置 | 部署者 |
 
 ---
 
@@ -115,8 +129,6 @@ BMOhackathon-20260616/
 ### 启动后端
 
 ```bash
-# Clone 后端仓库
-git clone https://github.com/yeung0327/llm-graph-builder.git
 cd llm-graph-builder
 
 # 配置环境变量（参考 backend/example.env）
@@ -179,8 +191,7 @@ yarn dev
 
 | 仓库 | 说明 |
 |------|------|
-| [BMOhackathon-20260616](https://github.com/yeung0327/BMOhackathon-20260616) | 本仓库：文档 + 设计规范 |
-| [llm-graph-builder](https://github.com/yeung0327/llm-graph-builder) | 后端 + 前端代码（Fork 自 Neo4j Labs） |
+| [BMOhackathon-20260616](https://github.com/yeung0327/BMOhackathon-20260616) | 本仓库：文档 + 设计规范 + 完整代码 |
 
 ---
 
