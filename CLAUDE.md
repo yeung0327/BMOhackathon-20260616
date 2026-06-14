@@ -19,12 +19,11 @@
 | 仓库 | 地址 | 用途 |
 |------|------|------|
 | 总仓库 | https://github.com/yeung0327/BMOhackathon-20260616 | 文档 + 前端定制 |
-| 后端仓库 | https://github.com/yeung0327/llm-graph-builder | Fork 的后端 |
+| 后端仓库 | https://github.com/yeung0327/llm-graph-builder | 后端 |
 
 **本地路径**：
 - 总仓库：`/Users/yangqianqian/Desktop/BMOhackathon-20260616/`
-- 后端仓库：`/Users/yangqianqian/Desktop/llm-graph-builder/`
-
+  
 ---
 
 ## 技术栈
@@ -93,6 +92,7 @@ VITE_SKIP_AUTH=true
 - 严格按 `memory-bank/implementation-plan.md` 的步骤顺序执行
 - 每步验证通过后才进入下一步
 - 更新 `memory-bank/progress.md` 记录进度
+- 永远只更新这个github仓库https://github.com/yeung0327/BMOhackathon-20260616/blob/main/memory-bank/progress.md
 
 ---
 
