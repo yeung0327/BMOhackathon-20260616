@@ -9,6 +9,7 @@ import { Toaster, SpotlightProvider } from '@neo4j-ndl/react';
 const Home: React.FC = () => {
   return (
     <>
+      <div className="starfield" />
       {APP_SOURCES != undefined && APP_SOURCES.includes('gcs') ? (
         <ErrorBoundary>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID as string}>

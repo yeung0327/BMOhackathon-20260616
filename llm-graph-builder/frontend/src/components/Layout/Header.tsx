@@ -88,8 +88,17 @@ const Header: React.FC<HeaderProp> = ({ chatOnly, deleteOnClick, setOpenConnecti
         >
           <section className='flex w-1/3 shrink-0 grow-0 items-center min-w-[200px]'>
             <Typography variant='h1'>
-              <span style={{ fontSize: '18px', fontWeight: 700, color: '#00d4ff' }}>
-                Roots &amp; Shoots · 知识宇宙
+              <span style={{
+                fontSize: '20px',
+                fontWeight: 700,
+                color: '#f59e0b',
+                textShadow: '0 0 10px rgba(245,158,11,0.3)',
+                letterSpacing: '0.5px'
+              }}>
+                🌱 根与芽 · 知识宇宙
+              </span>
+              <span style={{ fontSize: '12px', color: '#a0aec0', fontWeight: 400, marginLeft: '10px' }}>
+                文档关联 · 探索发现 · 对话溯源 —— 让知识自己长出连接
               </span>
             </Typography>
           </section>
