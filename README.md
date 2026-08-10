@@ -86,7 +86,7 @@ BMOhackathon-20260616/
 │   ├── architecture.md         ← 项目架构与文件说明
 │   ├── tech-stack.md           ← 技术选型与决策记录
 │   └── design-doc.md           ← 产品功能设计文档
-└── llm-graph-builder/          ← 核心代码（Fork 自 Neo4j Labs）
+└── llm-graph-builder/          ← 核心代码（Neo4j Labs）
     ├── backend/                ← Python FastAPI 后端
     │   ├── src/                ← 核心逻辑（抽取、问答、图谱查询）
     │   ├── Dockerfile          ← 后端容器镜像
