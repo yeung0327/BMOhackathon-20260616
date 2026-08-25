@@ -39,7 +39,7 @@ curl https://api.openai.com/v1/models -H "Authorization: Bearer <your-key>" | he
 **指令**：在 llm-graph-builder 项目中配置 `.env` 文件：
 - `backend/.env`：填入 Neo4j 连接信息 + OpenAI API 配置
   ```
-  NEO4J_URI=neo4j+s://ca425266.databases.neo4j.io
+  NEO4J_URI=neo4j+s://<your-instance-id>.databases.neo4j.io
   NEO4J_USERNAME=neo4j
   NEO4J_PASSWORD=<password>
   NEO4J_DATABASE=neo4j
@@ -102,7 +102,7 @@ curl https://api.openai.com/v1/models -H "Authorization: Bearer <your-key>" | he
 **关键参数**（必须显式传入，否则报 NoneType 错误）：
 ```bash
 curl -X POST http://localhost:8000/extract \
-  --data-urlencode "uri=bolt+s://ca425266.databases.neo4j.io" \
+  --data-urlencode "uri=bolt+s://<your-instance-id>.databases.neo4j.io" \
   --data-urlencode "userName=neo4j" \
   --data-urlencode "password=<password>" \
   --data-urlencode "database=neo4j" \

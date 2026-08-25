@@ -2,8 +2,6 @@
 
 > **将静态知识库转化为可交互、可探索、可对话的知识宇宙。**
 
-🌐 **在线演示**：https://roots-shoots-frontend.onrender.com *(部署后更新)*
-
 百度 BMO 黑客松 2026 参赛作品 
 
 ---
@@ -62,8 +60,8 @@
 
 | 层级 | 技术 | 说明 |
 |------|------|------|
-| 前端 | React + TypeScript + Vite | Fork 官方前端，深度定制 UI 和交互 |
-| 后端 | Python + FastAPI | llm-graph-builder 开源项目 |
+| 前端 | React + TypeScript + Vite | 深色宇宙主题、双击探索、图谱联动均为自研定制 |
+| 后端 | Python + FastAPI | 基于 neo4j-labs/llm-graph-builder 定制：重写实体抽取质量规则（粒度控制 + 中文命名 + 消除孤立节点），节点数 1587→457，孤立节点归零 |
 | 数据库 | Neo4j AuraDB | 云端图数据库，bolt+s 协议 |
 | LLM | DeepSeek API (deepseek-chat) | 通过 OpenAI 兼容层零改动接入 |
 | 嵌入模型 | all-MiniLM-L6-v2 | 容器内本地运行，384维向量 |

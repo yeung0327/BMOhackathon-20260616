@@ -32,7 +32,7 @@
 |------|------|
 | 前端 | React + TypeScript + Vite（Fork 官方前端） |
 | 后端 | Python + FastAPI（llm-graph-builder） |
-| 数据库 | Neo4j AuraDB Professional（实例 ID: ca425266, bolt+s 协议） |
+| 数据库 | Neo4j AuraDB Professional（bolt+s 协议，实例地址见本地 .env） |
 | LLM | **DeepSeek API**（deepseek-chat，通过 OpenAI 兼容层接入） |
 | 嵌入 | all-MiniLM-L6-v2（容器内本地） |
 | 容器化 | Docker Compose |
@@ -43,7 +43,7 @@
 
 ### 后端 `.env`（backend/.env）
 ```
-NEO4J_URI=bolt+s://ca425266.databases.neo4j.io
+NEO4J_URI=bolt+s://<your-instance-id>.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=<see env file>
 NEO4J_DATABASE=neo4j
